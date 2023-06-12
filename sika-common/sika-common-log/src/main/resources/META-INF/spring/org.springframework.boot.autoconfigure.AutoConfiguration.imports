@@ -1,0 +1,2 @@
+com.sika.common.log.service.AsyncLogService
+com.sika.common.log.aspect.LogAspect

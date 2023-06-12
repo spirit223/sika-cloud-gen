@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sika.task.mapper.TaskCorrectionMapper">
+    
+    <resultMap type="com.sika.task.domain.TaskCorrection" id="TaskCorrectionResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskContent"    column="task_content"    />
+        <result property="taskDept"    column="task_dept"    />
+        <result property="submitId"    column="submit_id"    />
+        <result property="submitUser"    column="submit_user"    />
+        <result property="submitContent"    column="submit_content"    />
+        <result property="correctResult"    column="correct_result"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTaskCorrectionVo">
+        select id, task_id, task_content, task_dept, submit_id, submit_user, submit_content, correct_result, create_by, create_time, update_by, update_time, remark from task_correction
+    </sql>
+
+<!--    <select id="selectTaskCorrectionList" parameterType="TaskCorrection" resultMap="TaskCorrectionResult">-->
+<!--        <include refid="selectTaskCorrectionVo"/>-->
+<!--        <where>  -->
+<!--            <if test="taskId != null "> and task_id = #{taskId}</if>-->
+<!--            <if test="taskContent != null  and taskContent != ''"> and task_content like concat('%', #{taskContent}, '%')</if>-->
+<!--            <if test="taskDept != null "> and task_dept = #{taskDept}</if>-->
+<!--            <if test="submitId != null "> and submit_id = #{submitId}</if>-->
+<!--            <if test="submitUser != null  and submitUser != ''"> and submit_user = #{submitUser}</if>-->
+<!--            <if test="submitContent != null  and submitContent != ''"> and submit_content = #{submitContent}</if>-->
+<!--            <if test="correctResult != null "> and correct_result = #{correctResult}</if>-->
+<!--            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>-->
+<!--            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+    <resultMap type="com.sika.task.domain.TaskCorrection" id="TaskCorrectionMap">
+        <result property="taskId"   column="taskId" />
+        <result property="taskContent"   column="taskContent" />
+        <result property="taskDept"   column="taskDept" />
+        <result property="submitId"   column="submitId" />
+        <result property="submitUserId"   column="submitUserId" />
+        <result property="submitUser"   column="submitUser" />
+        <result property="submitContent"   column="submitContent" />
+        <result property="correctResult"   column="correctResult" />
+    </resultMap>
+
+    <select id="selectTaskCorrectionList" parameterType="com.sika.task.domain.TaskCorrection" resultMap="TaskCorrectionMap">
+        SELECT
+        t.id                AS	taskId,
+        t.task_content      AS	taskContent,
+        t.task_dept         AS	taskDept,
+        s.id                AS	submitId,
+        s.user_id           AS	submitUserId,
+        su.nick_name        AS	submitUser,
+        s.submit_content    AS	submitContent,
+        s.correct_result    AS	correctResult
+        FROM
+        task_submit	s
+        LEFT JOIN
+        task_task		t
+        ON
+        s.task_id = t.id
+        LEFT JOIN
+        sys_user		su
+        ON
+        s.user_id = su.user_id
+        <where>
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+            <if test="taskContent != null  and taskContent != ''"> and task_content like concat('%', #{taskContent}, '%')</if>
+            <if test="taskDept != null "> and task_dept = #{taskDept}</if>
+            <if test="submitId != null "> and s.id = #{submitId}</if>
+            <if test="submitUser != null  and submitUser != ''"> and su.nick_name = #{submitUser}</if>
+            <if test="submitContent != null  and submitContent != ''"> and submit_content = #{submitContent}</if>
+            <if test="correctResult != null "> and correct_result = #{correctResult}</if>
+            <if test="createBy != null  and createBy != ''"> and t.create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and t.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskCorrectionById" parameterType="Long" resultMap="TaskCorrectionMap">
+        SELECT
+            t.id                AS	taskId,
+            t.task_content      AS	taskContent,
+            t.task_dept         AS	taskDept,
+            s.id                AS	submitId,
+            s.user_id           AS	submitUserId,
+            su.nick_name        AS	submitUser,
+            s.submit_content    AS	submitContent,
+            s.correct_result    AS	correctResult
+        FROM
+            task_submit	s
+                LEFT JOIN
+            task_task		t
+            ON
+                s.task_id = t.id
+                LEFT JOIN
+            sys_user		su
+            ON
+                s.user_id = su.user_id
+        where s.id = #{submitId}
+    </select>
+
+<!--    <select id="selectTaskCorrectionById" parameterType="Long" resultMap="TaskCorrectionResult">-->
+<!--        <include refid="selectTaskCorrectionVo"/>-->
+<!--        where id = #{id}-->
+<!--    </select>-->
+        
+    <insert id="insertTaskCorrection" parameterType="com.sika.task.domain.TaskCorrection" useGeneratedKeys="true" keyProperty="id">
+        insert into task_correction
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="taskContent != null">task_content,</if>
+            <if test="taskDept != null">task_dept,</if>
+            <if test="submitId != null">submit_id,</if>
+            <if test="submitUser != null">submit_user,</if>
+            <if test="submitContent != null">submit_content,</if>
+            <if test="correctResult != null">correct_result,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="taskContent != null">#{taskContent},</if>
+            <if test="taskDept != null">#{taskDept},</if>
+            <if test="submitId != null">#{submitId},</if>
+            <if test="submitUser != null">#{submitUser},</if>
+            <if test="submitContent != null">#{submitContent},</if>
+            <if test="correctResult != null">#{correctResult},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+    <update id="insertCorrectionToSubmit">
+        UPDATE task_submit
+        SET
+            correct_result = #{correctResult},
+            correct_remark = #{remark}
+        WHERE
+            id = #{submitId}
+    </update>
+
+    <update id="updateTaskCorrection" parameterType="com.sika.task.domain.TaskCorrection">
+        update task_correction
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="taskContent != null">task_content = #{taskContent},</if>
+            <if test="taskDept != null">task_dept = #{taskDept},</if>
+            <if test="submitId != null">submit_id = #{submitId},</if>
+            <if test="submitUser != null">submit_user = #{submitUser},</if>
+            <if test="submitContent != null">submit_content = #{submitContent},</if>
+            <if test="correctResult != null">correct_result = #{correctResult},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTaskCorrectionById" parameterType="Long">
+        delete from task_correction where id = #{id}
+    </delete>
+
+    <delete id="deleteTaskCorrectionByIds" parameterType="String">
+        delete from task_correction where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

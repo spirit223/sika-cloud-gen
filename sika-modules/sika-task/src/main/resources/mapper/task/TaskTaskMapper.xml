@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sika.task.mapper.TaskTaskMapper">
+    
+    <resultMap type="TaskTask" id="TaskTaskResult">
+        <result property="id"    column="id"    />
+        <result property="taskContent"    column="task_content"    />
+        <result property="taskAnswer"    column="task_answer"    />
+        <result property="taskDept"    column="task_dept"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTaskTaskVo">
+        select id, task_content, task_answer, task_dept, create_by, create_time, update_by, update_time, remark from task_task
+    </sql>
+
+    <select id="selectTaskTaskList" parameterType="TaskTask" resultMap="TaskTaskResult">
+        <include refid="selectTaskTaskVo"/>
+        <where>  
+            <if test="taskContent != null  and taskContent != ''"> and task_content like concat('%', #{taskContent}, '%')</if>
+            <if test="taskDept != null "> and task_dept = #{taskDept}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskTaskById" parameterType="Long" resultMap="TaskTaskResult">
+        <include refid="selectTaskTaskVo"/>
+        where id = #{id}
+    </select>
+    <select id="noQueryAnswer" resultType="java.lang.Boolean">
+        SELECT
+            r.role_key = "student"
+        FROM
+            sys_role r
+        LEFT JOIN
+            sys_user_role ur
+        ON
+            r.role_id = ur.role_id
+        LEFT JOIN
+            sys_user u
+        ON
+            u.user_id = ur.user_id
+        WHERE
+            u.user_name = #{username}
+    </select>
+
+    <select id="noQueryAnswerById" resultType="java.lang.Boolean">
+        SELECT
+            r.role_key = "student"
+        FROM
+            sys_role r
+                LEFT JOIN
+            sys_user_role ur
+            ON
+                r.role_id = ur.role_id
+                LEFT JOIN
+            sys_user u
+            ON
+                u.user_id = ur.user_id
+        WHERE
+            u.user_id = #{userId}
+    </select>
+
+    <insert id="insertTaskTask" parameterType="TaskTask" useGeneratedKeys="true" keyProperty="id">
+        insert into task_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskContent != null">task_content,</if>
+            <if test="taskAnswer != null">task_answer,</if>
+            <if test="taskDept != null">task_dept,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskContent != null">#{taskContent},</if>
+            <if test="taskAnswer != null">#{taskAnswer},</if>
+            <if test="taskDept != null">#{taskDept},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskTask" parameterType="TaskTask">
+        update task_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskContent != null">task_content = #{taskContent},</if>
+            <if test="taskAnswer != null">task_answer = #{taskAnswer},</if>
+            <if test="taskDept != null">task_dept = #{taskDept},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTaskTaskById" parameterType="Long">
+        delete from task_task where id = #{id}
+    </delete>
+
+    <delete id="deleteTaskTaskByIds" parameterType="String">
+        delete from task_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

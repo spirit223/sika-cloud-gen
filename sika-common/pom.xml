@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.sika</groupId>
+        <artifactId>sika</artifactId>
+        <version>3.6.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>sika-common-log</module>
+        <module>sika-common-core</module>
+        <module>sika-common-redis</module>
+        <module>sika-common-seata</module>
+        <module>sika-common-swagger</module>
+        <module>sika-common-security</module>
+        <module>sika-common-datascope</module>
+        <module>sika-common-datasource</module>
+    </modules>
+
+    <artifactId>sika-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        sika-common通用模块
+    </description>
+
+</project>

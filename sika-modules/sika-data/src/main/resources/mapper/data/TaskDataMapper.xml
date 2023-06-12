@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sika.data.mapper.TaskDataMapper">
+    
+    <resultMap type="TaskData" id="TaskDataResult">
+        <result property="dId"    column="d_id"    />
+        <result property="dTitle"    column="d_title"    />
+        <result property="dLocal"    column="d_local"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+
+    <sql id="selectTaskDataVo">
+        select d_id, d_title, d_local, create_by, create_time, update_by, update_time, remark from task_data
+    </sql>
+
+    <select id="selectTaskDataList" parameterType="TaskData" resultMap="TaskDataResult">
+        <include refid="selectTaskDataVo"/>
+        <where>  
+            <if test="dTitle != null  and dTitle != ''"> and d_title like concat('%', #{dTitle}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskDataByDId" parameterType="Long" resultMap="TaskDataResult">
+        <include refid="selectTaskDataVo"/>
+        where d_id = #{dId}
+    </select>
+        
+    <insert id="insertTaskData" parameterType="TaskData" useGeneratedKeys="true" keyProperty="dId">
+        insert into task_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dTitle != null">d_title,</if>
+            <if test="dLocal != null">d_local,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dTitle != null">#{dTitle},</if>
+            <if test="dLocal != null">#{dLocal},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskData" parameterType="TaskData">
+        update task_data
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dTitle != null">d_title = #{dTitle},</if>
+            <if test="dLocal != null">d_local = #{dLocal},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where d_id = #{dId}
+    </update>
+
+    <delete id="deleteTaskDataByDId" parameterType="Long">
+        delete from task_data where d_id = #{dId}
+    </delete>
+
+    <delete id="deleteTaskDataByDIds" parameterType="String">
+        delete from task_data where d_id in 
+        <foreach item="dId" collection="array" open="(" separator="," close=")">
+            #{dId}
+        </foreach>
+    </delete>
+</mapper>

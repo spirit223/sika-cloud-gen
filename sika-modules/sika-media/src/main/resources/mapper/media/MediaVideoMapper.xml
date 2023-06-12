@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sika.media.mapper.MediaVideoMapper">
+    
+    <resultMap type="com.sika.media.domain.MediaVideo" id="MediaVideoResult">
+        <result property="id"    column="id"    />
+        <result property="videoName"    column="video_name"    />
+        <result property="videoSourceId"    column="video_source_id"    />
+        <result property="videoOriginalName"    column="video_original_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMediaVideoVo">
+        select id, video_name, video_source_id, video_original_name, create_by, create_time, update_by, update_time, remark from media_video
+    </sql>
+
+    <select id="selectMediaVideoList" parameterType="com.sika.media.domain.MediaVideo" resultMap="MediaVideoResult">
+        <include refid="selectMediaVideoVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="videoName != null  and videoName != ''"> and video_name like concat('%', #{videoName}, '%')</if>
+            <if test="videoOriginalName != null  and videoOriginalName != ''"> and video_original_name like concat('%', #{videoOriginalName}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectMediaVideoById" parameterType="java.lang.String" resultMap="MediaVideoResult">
+        <include refid="selectMediaVideoVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectPlayURL" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT `video_source_id`
+        FROM    media_video
+        WHERE `id` = #{id}
+    </select>
+
+    <insert id="insertMediaVideo" parameterType="com.sika.media.domain.MediaVideo">
+        insert into media_video
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="videoName != null">video_name,</if>
+            <if test="videoSourceId != null">video_source_id,</if>
+            <if test="videoOriginalName != null">video_original_name,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="videoName != null">#{videoName},</if>
+            <if test="videoSourceId != null">#{videoSourceId},</if>
+            <if test="videoOriginalName != null">#{videoOriginalName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMediaVideo" parameterType="com.sika.media.domain.MediaVideo">
+        update media_video
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="videoName != null">video_name = #{videoName},</if>
+            <if test="videoSourceId != null">video_source_id = #{videoSourceId},</if>
+            <if test="videoOriginalName != null">video_original_name = #{videoOriginalName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="truncateTable">
+        TRUNCATE TABLE media_video
+    </update>
+
+    <delete id="deleteMediaVideoById" parameterType="String">
+        delete from media_video where id = #{id}
+    </delete>
+
+    <delete id="deleteMediaVideoByIds" parameterType="String">
+        delete from media_video where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

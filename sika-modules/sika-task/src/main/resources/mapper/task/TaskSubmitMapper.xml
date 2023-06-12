@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sika.task.mapper.TaskSubmitMapper">
+    
+    <resultMap type="TaskSubmit" id="TaskSubmitResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="submitContent"    column="submit_content"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="correctResult"    column="correct_result"    />
+        <result property="correctRemark"    column="correct_remark"    />
+    </resultMap>
+    <resultMap id="SubmitRecordMap" type="com.sika.task.domain.SubmitRecord">
+        <result property="submitId" column="submitId" />
+        <result property="userId" column="userId" />
+        <result property="submitContent" column="submitContent" />
+        <result property="taskId" column="taskId" />
+        <result property="taskContent" column="taskContent" />
+        <result property="correctResult" column="correctResult" />
+    </resultMap>
+
+    <sql id="selectTaskSubmitVo">
+        select id, user_id, submit_content, task_id, correct_result, correct_remark from task_submit
+    </sql>
+
+    <!--<select id="selectTaskSubmitList" parameterType="TaskSubmit" resultMap="TaskSubmitResult">
+        <include refid="selectTaskSubmitVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="submitContent != null  and submitContent != ''"> and submit_content = #{submitContent}</if>
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+            <if test="correctResult != null "> and correct_result = #{correctResult}</if>
+        </where>
+    </select>-->
+    <select id="selectTaskSubmitList" resultMap="SubmitRecordMap" parameterType="TaskSubmit">
+        SELECT
+        submit.id                   AS  submitId,
+        submit.submit_content       AS  submitContent,
+        task.id                     AS  taskId,
+        task.task_content           AS  taskContent,
+        IFNULL(user_id, #{userId})  AS  userId
+        FROM
+        task_task   task
+        LEFT JOIN
+        task_submit	submit
+        ON
+        submit.submit_content IS NULL
+        <where>
+        task.id NOT IN (SELECT task_id FROM task_submit)
+        AND
+        task.task_dept = (SELECT dept_id FROM sys_user WHERE sys_user.user_id = #{userId})
+        <if test="taskId != null "> and task.id = #{taskId}</if>
+        </where>
+    </select>
+    
+    <select id="selectTaskById" parameterType="Long" resultType="string">
+        SELECT
+            task_content           AS  taskContent
+        FROM
+            task_task
+        WHERE
+            id = #{taskId}
+    </select>
+
+    <select id="selectUncommitted" resultType="com.sika.task.domain.SubmitRecord">
+        SELECT
+            id,
+            task_content,
+            create_by,
+            create_time
+        FROM
+            task_task
+        WHERE
+            task_dept = #{deptId}
+            AND
+            id NOT IN
+            (
+                SELECT task_submit.task_id
+                FROM task_submit
+                WHERE task_submit.user_id = #{userId}
+            )
+    </select>
+    <select id="selectUncommittedByUserId" resultType="com.sika.task.domain.SubmitRecord">
+        SELECT
+            id              AS id,
+            task_content    AS taskContent,
+            create_by       AS createBy,
+            create_time     AS createTime
+        FROM
+            task_task
+        WHERE
+                task_dept =
+                (
+                    SELECT
+                        dept_id
+                    FROM
+                        sys_user
+                    WHERE
+                        user_id = #{userId}
+                )
+            AND
+                id NOT IN
+                (
+                    SELECT task_submit.task_id
+                    FROM task_submit
+                    WHERE task_submit.user_id = #{userId}
+                )
+    </select>
+
+    <insert id="insertTaskSubmit" parameterType="TaskSubmit" useGeneratedKeys="true" keyProperty="id">
+        insert into task_submit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="submitContent != null">submit_content,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="correctResult != null">correct_result,</if>
+            <if test="correctRemark != null">correct_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="submitContent != null">#{submitContent},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="correctResult != null">#{correctResult},</if>
+            <if test="correctRemark != null">#{correctRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTaskSubmit" parameterType="TaskSubmit">
+        update task_submit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="submitContent != null">submit_content = #{submitContent},</if>
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="correctResult != null">correct_result = #{correctResult},</if>
+            <if test="correctRemark != null">correct_remark = #{correctRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTaskSubmitById" parameterType="Long">
+        delete from task_submit where id = #{id}
+    </delete>
+
+    <delete id="deleteTaskSubmitByIds" parameterType="String">
+        delete from task_submit where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

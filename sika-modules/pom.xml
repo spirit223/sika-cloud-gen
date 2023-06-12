@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.sika</groupId>
+        <artifactId>sika</artifactId>
+        <version>3.6.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>sika-system</module>
+        <module>sika-gen</module>
+        <module>sika-job</module>
+        <module>sika-file</module>
+        <module>sika-task</module>
+        <module>sika-data</module>
+        <module>sika-media</module>
+    </modules>
+
+    <artifactId>sika-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        sika-modules业务模块
+    </description>
+
+</project>
