@@ -122,7 +122,7 @@ public class MediaManager {
 
     // 请求示例
     public static void main(String[] argv) {
-        DefaultAcsClient client = initVodClient("cn-shanghai", "LTAI5tQztNdhzGTEcuZagNAJ", "3aBAkY6OICbGNPenTZK5hjmX0mg3D5");
+        DefaultAcsClient client = initVodClient("regionId", "accessKeyId", "accessKeySecret");
 
 
         /* 获取播放信息 */
